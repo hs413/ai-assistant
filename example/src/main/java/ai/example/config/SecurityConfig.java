@@ -1,5 +1,6 @@
 package ai.example.config;
 
+import ai.example.auth.JwtAuthenticationFilter;
 import ai.example.auth.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final CustomUserDetailsService userDetailService;
 
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -30,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login").permitAll() // 로그인 API 허용
                         .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 );;
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // 커스텀 필터 추가
 
         return http.build();
     }
